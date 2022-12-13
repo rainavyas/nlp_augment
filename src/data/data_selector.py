@@ -19,6 +19,6 @@ def augment(eda_aug, data):
     for d in tqdm(data):
         aug_texts = eda_aug.augment(d['text'])
         aug_data = [{'text':t, 'label':d['label']} for t in aug_texts]
-        return aug_data
+    return aug_data
 
 

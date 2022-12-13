@@ -8,7 +8,7 @@ from datasets import load_dataset
 def load_data(data_name:str, cache_dir:str, lim:int=None)->Tuple['train', 'val', 'test']:
     data_ret = {
         'imdb'   : _load_imdb,
-        'imdb'   : _load_twitter,
+        'twitter'   : _load_twitter,
         'dbpedia': _load_dbpedia,
         'rt'     : _load_rotten_tomatoes,
         'sst'    : _load_sst,
@@ -27,18 +27,19 @@ def _load_imdb(cache_dir, lim:int=None)->List[Dict['text', 'label']]:
     return train, val, test
 
 def _load_twitter(cache_dir, lim:int=None)->List[Dict['text', 'label']]:
+    # Source: https://www.kaggle.com/datasets/parulpandey/emotion-dataset?select=test.csv
+    base_path = f'{cache_dir}/twitter/'
     CLASS_TO_IND = {
-        'love': 1,
-        'joy': 1,
-        'fear': 0,
-        'anger': 0,
-        'surprise': 1,
-        'sadness': 0,
+        '2': 1, # love
+        '1': 1, # joy
+        '4': 0, # fear
+        '3': 0, # anger
+        '5': 1, # surprise
+        '0': 0, # sadness
     }
-    dataset = load_dataset("emotion", cache_dir=cache_dir)
-    train = [_map_labels(l) for l in list(dataset['train'])[:lim]]
-    val   = [_map_labels(l) for l in list(dataset['validation'])[:lim]]
-    test  = [_map_labels(l) for l in list(dataset['test'])[:lim]]
+    train = _read_file(f'{base_path}training.csv', CLASS_TO_IND)
+    val = _read_file(f'{base_path}validation.csv', CLASS_TO_IND)
+    test = _read_file(f'{base_path}test.csv', CLASS_TO_IND)
     return train, val, test
 
 def _load_dbpedia(cache_dir, lim:int=None):
@@ -116,7 +117,7 @@ def _read_file(filepath, CLASS_TO_IND):
 
     examples = []
     for line in lines:
-        items = line.split(';')
+        items = line.split(',')
         try:
             examples.append({'text':items[0], 'label':CLASS_TO_IND[items[1]]})
         except:
