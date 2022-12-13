@@ -8,6 +8,7 @@ from datasets import load_dataset
 def load_data(data_name:str, cache_dir:str, lim:int=None)->Tuple['train', 'val', 'test']:
     data_ret = {
         'imdb'   : _load_imdb,
+        'imdb'   : _load_twitter,
         'dbpedia': _load_dbpedia,
         'rt'     : _load_rotten_tomatoes,
         'sst'    : _load_sst,
@@ -23,6 +24,21 @@ def _load_imdb(cache_dir, lim:int=None)->List[Dict['text', 'label']]:
     train_data = list(dataset['train'])[:lim]
     train, val = _create_splits(train_data, 0.8)
     test       = list(dataset['test'])[:lim]
+    return train, val, test
+
+def _load_twitter(cache_dir, lim:int=None)->List[Dict['text', 'label']]:
+    CLASS_TO_IND = {
+        'love': 1,
+        'joy': 1,
+        'fear': 0,
+        'anger': 0,
+        'surprise': 1,
+        'sadness': 0,
+    }
+    dataset = load_dataset("emotion", cache_dir=cache_dir)
+    train = [_map_labels(l) for l in list(dataset['train'])[:lim]]
+    val   = [_map_labels(l) for l in list(dataset['validation'])[:lim]]
+    test  = [_map_labels(l) for l in list(dataset['test'])[:lim]]
     return train, val, test
 
 def _load_dbpedia(cache_dir, lim:int=None):

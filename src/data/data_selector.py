@@ -1,7 +1,8 @@
 from .data_utils import load_data
 from textattack.augmentation import EasyDataAugmenter
+from tqdm import tqdm 
 
-def data_sel(args, train=True, aug=False):
+def select_data(args, train=True, aug=False, aug_num=3):
     train_data, val_data, test_data = load_data(args.data_name, args.data_dir_path)
 
     if not train:
@@ -9,14 +10,15 @@ def data_sel(args, train=True, aug=False):
     
     if aug:
         # Augment all samples
-        eda_aug = EasyDataAugmenter()
-
-        aug_train_data = [{'text':eda_aug.augment(d['text']), 'label':d['label']} for d in train_data]
-        aug_val_data = [{'text':eda_aug.augment(d['text']), 'label':d['label']} for d in train_data]
-
-        train_data += aug_train_data
-        val_data += aug_val_data
-    
+        eda_aug = EasyDataAugmenter(transformations_per_example=aug_num, pct_words_to_swap=0.5)
+        train_data += augment(eda_aug, train_data)
+        val_data += augment(eda_aug, val_data)
     return val_data, train_data
+
+def augment(eda_aug, data):
+    for d in tqdm(data):
+        aug_texts = eda_aug.augment(d['text'])
+        aug_data = [{'text':t, 'label':d['label']} for t in aug_texts]
+        return aug_data
 
 

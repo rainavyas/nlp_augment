@@ -3,11 +3,15 @@ import torch.nn as nn
 import torch
 
 class SequenceClassifier(nn.Module):
-    def __init__(self, model_name='bert-base-uncased', num_labels=2):
+    def __init__(self, model_name='bert-base-uncased', num_labels=2, pretrained=True):
         super().__init__()
         self.model_name = model_name
-        self.model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=num_labels)
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        if pretrained:
+            self.model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=num_labels)
+            self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        else:
+            self.model = AutoModelForSequenceClassification.from_config(model_name, num_labels=num_labels)
+            self.tokenizer = AutoTokenizer.from_config(model_name)
     
     def forward(self, input_ids, attention_mask=None):
         return self.model(input_ids, attention_mask=attention_mask)[0]
