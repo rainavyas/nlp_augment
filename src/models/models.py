@@ -12,7 +12,7 @@ class SequenceClassifier(nn.Module):
         else:
             config = AutoConfig.from_pretrained(model_name, num_labels=num_labels) # returns config and not pretrained weights 
             self.model = AutoModelForSequenceClassification.from_config(config)
-            self.tokenizer = AutoTokenizer.from_config(config)
+            self.tokenizer = AutoTokenizer.from_pretrained(model_name)
     
     def forward(self, input_ids, attention_mask=None):
         return self.model(input_ids, attention_mask=attention_mask)[0]
