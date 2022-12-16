@@ -1,4 +1,4 @@
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, AutoConfig
 import torch.nn as nn
 import torch
 
@@ -10,8 +10,9 @@ class SequenceClassifier(nn.Module):
             self.model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=num_labels)
             self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         else:
-            self.model = AutoModelForSequenceClassification.from_config(model_name, num_labels=num_labels)
-            self.tokenizer = AutoTokenizer.from_config(model_name)
+            config = AutoConfig.from_pretrained(model_name, num_labels=num_labels) # returns config and not pretrained weights 
+            self.model = AutoModelForSequenceClassification.from_config(config)
+            self.tokenizer = AutoTokenizer.from_config(config)
     
     def forward(self, input_ids, attention_mask=None):
         return self.model(input_ids, attention_mask=attention_mask)[0]
