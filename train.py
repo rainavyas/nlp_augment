@@ -26,12 +26,13 @@ if __name__ == "__main__":
     commandLineParser.add_argument('--aug_num', type=int, default=3, help="Number of times to augment")
     commandLineParser.add_argument('--aug_method', type=str, default='eda', help="Augmentation Method")
     commandLineParser.add_argument('--change_amount', type=float, default=0.5, help="Fraction of words to change in augmentation for example")
+    commandLineParser.add_argument('--prune', type=float, default=1.0, help="Pruning: Fraction of samples to keep")
     commandLineParser.add_argument('--not_pretrained', action='store_true', help='do not use pretrained_model')
     commandLineParser.add_argument('--aug_sample', action='store_true', help='use data augmentation to define a distribution and use this to sample original training samples')
     args = commandLineParser.parse_args()
 
     set_seeds(args.seed)
-    out_file = f'{args.out_dir}/{args.model_name}_{args.data_name}_aug{args.aug}_aug-sample{args.aug_sample}_aug-num{args.aug_num}_change-amount{args.change_amount}_method-{args.aug_method}_pretrained{not args.not_pretrained}_seed{args.seed}.th'
+    out_file = f'{args.out_dir}/{args.model_name}_{args.data_name}_aug{args.aug}_aug-sample{args.aug_sample}_aug-num{args.aug_num}_change-amount{args.change_amount}_method-{args.aug_method}_pretrained{not args.not_pretrained}_prune{args.prune}_seed{args.seed}.th'
 
     # Save the command run
     if not os.path.isdir('CMDs'):

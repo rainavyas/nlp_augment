@@ -96,5 +96,4 @@ class Augmenter():
 
             aug_text = aug3b.augment(aug3a.augment(d['text'])[0])[0]
             aug_data.append({'text':aug_text, 'label':d['label']})
-            import pdb; pdb.set_trace()
         return source_data + aug_data
